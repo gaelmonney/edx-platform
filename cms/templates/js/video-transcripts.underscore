@@ -21,7 +21,18 @@
             <% }) %>
         </select>
         <div class='transcript-actions'>
-            <button class="button-link download-transcript-button" data-edx-video-id="<%- edxVideoID %>" data-language-code="<%- transcriptLanguageCode %>">
+            <button
+                class="button-link download-transcript-button"
+                href="<%- StringUtils.interpolate(
+                    '{transcriptDownloadHandlerUrl}?edx_video_id={edxVideoID}&language_code={transcriptLanguageCode}&filename={transcriptClientTitle}',
+                    {
+                        transcriptDownloadHandlerUrl: transcriptDownloadHandlerUrl,
+                        edxVideoID: edxVideoID,
+                        transcriptLanguageCode: transcriptLanguageCode,
+                        transcriptClientTitle: transcriptClientTitle
+                    }
+                ) %>"
+            >
                 <%- gettext('Download') %>
             </button>
             <span class='transcript-actions-separator'> | </span>
