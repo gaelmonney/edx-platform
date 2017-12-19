@@ -146,8 +146,12 @@ from student.models import CourseEnrollment
                 is_fulfilled_entitlement = True if entitlement and entitlement_session else False
                 is_unfulfilled_entitlement = True if entitlement and not entitlement_session else False
 
+                show_email_settings = (session_id in show_email_settings_for)
+
                 entitlement_available_sessions = []
                 if entitlement:
+                  # Only show email settings for entitlement cards if the entitlement has an associated enrollment
+                  show_email_settings = show_email_settings and entitlement_session
                   # Grab the available, enrollable sessions for a given entitlement and scrape them for relevant attributes
                   entitlement_available_sessions = [{
                     'session_id': course['key'],
@@ -174,7 +178,6 @@ from student.models import CourseEnrollment
                 can_refund_entitlement = entitlement and entitlement.is_entitlement_refundable()
                 can_unenroll = (not cert_status) or cert_status.get('can_unenroll') if not unfulfilled_entitlement else False
                 credit_status = credit_statuses.get(session_id)
-                show_email_settings = (session_id in show_email_settings_for)
                 course_mode_info = all_course_modes.get(session_id)
                 is_paid_course = True if entitlement else (session_id in enrolled_courses_either_paid)
                 is_course_blocked = (session_id in block_courses)

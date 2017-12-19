@@ -29,10 +29,10 @@ dropdown_btn_id = "entitlement-actions-dropdown-btn-{}".format(dashboard_index)
     <ul class="entitlement-actions-dropdown-list" aria-label="${_('Available Actions')}" role="menu">
       % if can_refund_entitlement:
         <li class="entitlement-actions-item" role="menuitem">
-          ## href, id, rel, and data-model-close-button-selector must be defined for compatibility with lms/static/js/leanModal.js
+          ## href, rel, and data-model-close-button-selector must be defined for compatibility with lms/static/js/leanModal.js
           ## data-dropdown-selector and data-dropdown-button-selector must be defined for compatibility with lms/static/js/dashboard/dropdown.js
           ## class="js-entitlement-action-unenroll" must be set for compatibility with lms/static/js/learner_dashboard/views/entitlement_unenrollment_view.js
-          <a href="#entitlement-unenrollment-modal" id="entitlement-action-unenroll-${dashboard_index}" class="entitlement-action js-entitlement-action-unenroll" rel="leanModal"
+          <a href="#entitlement-unenrollment-modal" class="entitlement-action js-entitlement-action-unenroll" rel="leanModal"
             data-modal-close-button-selector=".js-entitlement-unenrollment-modal .js-entitlement-unenrollment-modal-close-btn"
             data-dropdown-selector="#${dropdown_id}"
             data-dropdown-button-selector="#${dropdown_btn_id}"
@@ -43,7 +43,7 @@ dropdown_btn_id = "entitlement-actions-dropdown-btn-{}".format(dashboard_index)
           </a>
         </li>
       % endif
-      % if show_email_settings and entitlement_session:
+      % if show_email_settings:
         <li class="entitlement-actions-item" id="actions-item-email-settings-${dashboard_index}" role="menuitem">
           ## href, id, rel, and data-model-close-button-selector must be defined for compatibility with lms/static/js/leanModal.js
           ## data-dropdown-selector and data-dropdown-button-selector must be defined for compatibility with lms/static/js/dashboard/dropdown.js
