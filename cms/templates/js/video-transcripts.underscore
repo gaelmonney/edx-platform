@@ -21,7 +21,7 @@
             <% }) %>
         </select>
         <div class='transcript-actions'>
-            <button
+            <a
                 class="button-link download-transcript-button"
                 href="<%- StringUtils.interpolate(
                     '{transcriptDownloadHandlerUrl}?edx_video_id={edxVideoID}&language_code={transcriptLanguageCode}&filename={transcriptClientTitle}',
