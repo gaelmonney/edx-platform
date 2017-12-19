@@ -381,27 +381,36 @@ def _third_party_auth_context(request, redirect_to, tpa_hint=None):
                 context['errorMessage'] = _(unicode(msg))  # pylint: disable=translation-of-non-string
                 break
 
-        if enterprise_customer and context['errorMessage']:
-            context['errorMessage'] = Text(_(
-                u'We are sorry, you are not authorized to access {platform_name} via this channel. '
-                u'Please contact your {enterprise} administrator in order to access {platform_name} '
-                u'or contact {edx_support_link}.{line_break}'
-                u'{line_break}'
-                u'Error Details:{line_break}{error_message}')
+        context = _update_context_for_enterprise_error_message(context, enterprise_customer)
+
+    return context
+
+
+def _update_context_for_enterprise_error_message(context, enterprise_customer=None):
+    """
+    Return updated context with modified `errorMessage` for enterprise.
+    """
+    if enterprise_customer and context['errorMessage']:
+        context['errorMessage'] = Text(_(
+            u'We are sorry, you are not authorized to access {platform_name} via this channel. '
+            u'Please contact your {enterprise} administrator in order to access {platform_name} '
+            u'or contact {edx_support_link}.{line_break}'
+            u'{line_break}'
+            u'Error Details:{line_break}{error_message}')
+        ).format(
+            platform_name=configuration_helpers.get_value('PLATFORM_NAME', settings.PLATFORM_NAME),
+            enterprise=enterprise_customer['name'],
+            error_message=context['errorMessage'],
+            edx_support_link=HTML(
+                '<a href="{edx_support_url}">{support_url_name}</a>'
             ).format(
-                platform_name=configuration_helpers.get_value('PLATFORM_NAME', settings.PLATFORM_NAME),
-                enterprise=enterprise_customer['name'],
-                error_message=context['errorMessage'],
-                edx_support_link=HTML(
-                    '<a href="{edx_support_url}">{support_url_name}</a>'
-                ).format(
-                    edx_support_url=configuration_helpers.get_value(
-                        'SUPPORT_SITE_LINK', settings.SUPPORT_SITE_LINK
-                    ),
-                    support_url_name=_('edX Support'),
+                edx_support_url=configuration_helpers.get_value(
+                    'SUPPORT_SITE_LINK', settings.SUPPORT_SITE_LINK
                 ),
-                line_break=HTML('<br/>')
-            )
+                support_url_name=_('edX Support'),
+            ),
+            line_break=HTML('<br/>')
+        )
 
     return context
 
