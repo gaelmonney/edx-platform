@@ -44,6 +44,7 @@ from openedx.core.djangoapps.site_configuration.tests.mixins import SiteMixin
 from openedx.core.djangoapps.theming.tests.test_util import with_comprehensive_theme_context
 from openedx.core.djangoapps.user_api.accounts.api import activate_account, create_account
 from openedx.core.djangolib.js_utils import dump_js_escaped_json
+from openedx.core.djangolib.markup import HTML, Text
 from openedx.core.djangolib.testing.utils import CacheIsolationTestCase
 from student.tests.factories import UserFactory
 from student_account.views import account_settings_context, get_user_orders
@@ -539,23 +540,23 @@ class StudentAccountLoginAndRegistrationTest(ThirdPartyAuthTestMixin, UrlResetMi
             with mock.patch('edxmako.request_context.get_current_request', return_value=request):
                 response = login_and_registration_form(request)
 
-        expected_providers = []
-        expected_error_message = _(
-            u'We are sorry, you are not authorized to access {platform_name} '
-            u'via this channel. Please contact your {enterprise} administrator in '
-            u'order to access {platform_name} or contact {link_start}edX Support{link_end}.'
-            u'{line_break}{line_break}'
-            u'Error Details:{line_break}'
-            u'{error_message}'.format(
-                platform_name=settings.PLATFORM_NAME,
-                enterprise=enterprise_customer_data['name'],
-                error_message=dummy_error_message,
-                link_start='<a href="{edx_support_url}">'.format(
-                    edx_support_url=settings.SUPPORT_SITE_LINK
-                ),
-                link_end='</a>',
-                line_break='<br/>'
-            )
+        expected_error_message = Text(_(
+            u'We are sorry, you are not authorized to access {platform_name} via this channel. '
+            u'Please contact your {enterprise} administrator in order to access {platform_name} '
+            u'or contact {edx_support_link}.{line_break}'
+            u'{line_break}'
+            u'Error Details:{line_break}{error_message}')
+        ).format(
+            platform_name=settings.PLATFORM_NAME,
+            enterprise=enterprise_customer_data['name'],
+            error_message=dummy_error_message,
+            edx_support_link=HTML(
+                '<a href="{edx_support_url}">{support_url_name}</a>'
+            ).format(
+                edx_support_url=settings.SUPPORT_SITE_LINK,
+                support_url_name=_('edX Support'),
+            ),
+            line_break=HTML('<br/>')
         )
         self._assert_saml_auth_data_with_error(
             response,
