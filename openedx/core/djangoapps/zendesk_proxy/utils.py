@@ -24,8 +24,9 @@ def create_zendesk_ticket(requester_name, requester_email, subject, body, custom
         """Internal helper to standardize error message. This allows for simpler splunk alerts."""
         return 'zendesk_proxy action required\n{}\nNo ticket created for payload {}'.format(details, payload)
 
-    # Remove duplicates from tags list
-    tags = list(set(tags))
+    if tags:
+        # Remove duplicates from tags list
+        tags = list(set(tags))
 
     data = {
         'ticket': {

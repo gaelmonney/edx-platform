@@ -1,14 +1,14 @@
 """Tests for zendesk_proxy views."""
-from copy import deepcopy
-import ddt
 import json
-from mock import MagicMock, patch
+from copy import deepcopy
 
+import ddt
 from django.core.urlresolvers import reverse
 from django.test.utils import override_settings
+from mock import MagicMock, patch
 
-from openedx.core.lib.api.test_utils import ApiTestCase
 from openedx.core.djangoapps.zendesk_proxy.v0.views import ZENDESK_REQUESTS_PER_HOUR
+from openedx.core.lib.api.test_utils import ApiTestCase
 
 
 @ddt.ddt
@@ -66,40 +66,6 @@ class ZendeskProxyTestCase(ApiTestCase):
             content_type='application/json'
         )
         self.assertHttpBadRequest(response)
-
-    @override_settings(
-        ZENDESK_URL=None,
-        ZENDESK_OAUTH_ACCESS_TOKEN=None
-    )
-    def test_missing_settings(self):
-        response = self.request_without_auth(
-            'post',
-            self.url,
-            data=json.dumps(self.request_data),
-            content_type='application/json'
-        )
-        self.assertEqual(response.status_code, 503)
-
-    @ddt.data(201, 400, 401, 403, 404, 500)
-    def test_zendesk_status_codes(self, mock_code):
-        with patch('requests.post', return_value=MagicMock(status_code=mock_code)):
-            response = self.request_without_auth(
-                'post',
-                self.url,
-                data=json.dumps(self.request_data),
-                content_type='application/json'
-            )
-            self.assertEqual(response.status_code, mock_code)
-
-    def test_unexpected_error_pinging_zendesk(self):
-        with patch('requests.post', side_effect=Exception("WHAMMY")):
-            response = self.request_without_auth(
-                'post',
-                self.url,
-                data=json.dumps(self.request_data),
-                content_type='application/json'
-            )
-            self.assertEqual(response.status_code, 500)
 
     @override_settings(
         CACHES={
